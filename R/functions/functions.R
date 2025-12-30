@@ -112,6 +112,100 @@ calculate_trend_weight <- function(data) {
 
 #### Functions for analysis and plots ----
 
+# Cut phase
+calculate_weight_loss <- function(data) {
+  weight_loss <- data |>
+    arrange(date) |>
+    summarise(
+      start_weight = first(trend_weight),
+      end_weight = last(trend_weight)
+    ) |>
+    mutate(
+      loss = start_weight - end_weight
+    )
+  
+  return(weight_loss)
+}
+
+plot_weight_loss <- function(data, weight_loss) {
+  weight_plot <- data |>
+    ggplot(aes(x=date)) +
+    geom_line(
+      aes(y = weight_kg, colour = "Raw Scale Weight"),
+    ) +
+    geom_line(
+      aes(y = trend_weight, colour = "Trend Weight"),
+    ) +
+    scale_colour_manual(
+      name = NULL,
+      values = c("Raw Scale Weight" = "grey70",
+                 "Trend Weight" = "black")
+    ) +
+    annotate("text",
+             x = as.numeric(ymd("2025-11-15")),
+             y = 75,
+             label = glue::glue("Start weight = {round(weight_loss$start_weight,2)} kg\nEnd weight = {round(weight_loss$end_weight,2)} kg\nWeight loss = {round(weight_loss$loss,2)} kg")) +
+    scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+    labs(
+      y = "Weight (kg)",
+      x = "Time",
+      title = "Scale and trend weight during cut"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  return(weight_plot)
+}
+
+calculate_energy_deficit <- function(data) {
+  energy_deficit <- data |>
+    mutate(
+      energy_diff = calories_kcal - expenditure
+    ) |>
+    summarise(
+      average_diff = mean(energy_diff, na.rm=TRUE),
+      sd_diff = sd(energy_diff, na.rm=TRUE)
+    )
+  
+  return(energy_deficit)
+}
+
+plot_kcal <- function(data, energy_deficit) {
+  kcal_plot <- data |>
+    ggplot(aes(x=date, y=calories_kcal)) +
+    geom_col(
+      aes(y = calories_kcal, fill = "Intake"),
+      color = "black"
+    ) +
+    geom_line(
+      aes(y = expenditure, colour = "Expenditure"),
+      linewidth = 1
+    ) +
+    scale_fill_manual(
+      name = NULL,
+      values = c("Intake" = "grey70")
+    ) +
+    scale_colour_manual(
+      name = NULL,
+      values = c("Expenditure" = "red")
+    ) +
+    annotate("text",
+             x = as.numeric(ymd("2025-10-01")),
+             y = 7000,
+             label = glue::glue("Mean (SD) energy deficit = {round(energy_deficit$average_diff)} ({round(energy_deficit$sd_diff)}) kcal")) +
+    scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+    labs(
+      y = "Energy (kcal)",
+      x = "Time",
+      title = "Total energy intake and expenditure during cut"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  return(kcal_plot)
+}
+
+# Longer term reflection
 estimate_ffm <- function(data, bf_loess) {
   data <- data |>
     bind_cols(as_tibble(predict(bf_loess, newdata = data$date, se=TRUE))) |>

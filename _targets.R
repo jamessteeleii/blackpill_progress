@@ -178,6 +178,40 @@ list(
       filter(date <= "2025-12-18")
   ),
   
+  # Cut phase analysis/plots ----
+  
+  tar_target(
+    cut_data,
+    all_data_prepared |>
+      filter(date >= "2025-09-03")
+  ),
+  
+  tar_target(
+    weight_loss,
+    calculate_weight_loss(cut_data)
+  ),
+  
+  tar_target(
+    weight_loss_plot,
+    plot_weight_loss(cut_data, weight_loss)
+  ),
+  
+  tar_target(
+    energy_deficit,
+    calculate_energy_deficit(cut_data)
+  ),
+  
+  tar_target(
+    kcal_plot,
+    plot_kcal(cut_data, energy_deficit)
+  ),
+  
+  tar_target(
+    weight_energy_plot,
+    weight_plot / kcal_plot
+  ),
+  
+  
   # Fat free mass estimates ----
   
   tar_target(
