@@ -199,6 +199,32 @@ kcal_plot <- cut_data |>
 
 weight_plot / kcal_plot
 
+steps <- cut_data |>
+  summarise(
+    mean_steps = mean(steps, na.rm=TRUE),
+    sd_steps = sd(steps, na.rm=TRUE)
+  )
+
+steps_plot <- cut_data |>
+  ggplot(aes(x=date, y=steps)) +
+  geom_col(color = "black", fill = "grey70") +
+  geom_text(
+    data = steps,
+    aes(
+      x = as.numeric(ymd("2025-10-30")),
+      y = 22500,
+      label = glue::glue("Mean (SD) = {round(mean_steps)} ({round(sd_steps)}) steps")
+    )
+    ) +
+  scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+  labs(
+    y = "Total steps",
+    x = "Time",
+    title = "Total daily steps during cut"
+  ) +
+  theme_bw()
+
+
 macros_data <- cut_data |>
   select(date, fat_g, carbs_g, protein_g) |>
   pivot_longer(2:4,
@@ -223,6 +249,13 @@ macros_plot <- macros_data |>
   ggplot(aes(x=date, y=grams)) +
   geom_col(aes(fill=macro)) +
   ggh4x::facet_wrap2("macro", scales = "free_y") +
+  ggh4x::facetted_pos_scales(
+    y = list(
+      NULL,
+      NULL,
+      scale_y_continuous(expand = expansion(mult = c(0, 0.25)))
+    )
+  ) +
   geom_text(
     data = macros_averages,
     aes(
