@@ -134,12 +134,12 @@ plot_weight_loss <- function(data, weight_loss) {
       aes(y = weight_kg, colour = "Raw Scale Weight"),
     ) +
     geom_line(
-      aes(y = trend_weight, colour = "Trend Weight*"),
+      aes(y = trend_weight, colour = "Trend Weight"),
     ) +
     scale_colour_manual(
       name = NULL,
       values = c("Raw Scale Weight" = "grey70",
-                 "Trend Weight*" = "black")
+                 "Trend Weight" = "black")
     ) +
     annotate("text",
              x = as.numeric(ymd("2025-11-15")),
@@ -149,7 +149,8 @@ plot_weight_loss <- function(data, weight_loss) {
     labs(
       y = "Weight (kg)",
       x = "Time",
-      title = "Scale and trend weight* during cut"
+      title = "Scale and trend weight during cut",
+      subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*"
     ) +
     theme_bw() +
     theme(legend.position = "bottom")
@@ -321,7 +322,9 @@ plot_weight <- function(data) {
     labs(
       y = "Weight (kg)",
       x = "Time",
-      title = "Scale and trend weight from 2020 to 2025"
+      title = "Scale and trend weight from 2020 to 2025",
+      subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*",
+      caption = "*This is the same as used in MacroFactors trended weight"
     ) +
     theme_bw() +
     theme(legend.position = "bottom")

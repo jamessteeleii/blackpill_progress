@@ -271,6 +271,12 @@ list(
     plot_ffm_kgs(ffm_estimate_data)
   ),
   
+  tar_target(
+    ffm_estimates_plot,
+    (ffm_kgs_plot / ffm_percent_plot) +
+      plot_annotation(caption = "*This is the same as used in MacroFactors trended weight\n\u2020Calculated from bodpod estimated density using formula from Magee et al. (DOI: 10.1080/15502783.2025.2504578)")
+  ),
+  
   # Are my biceps bigger? lol
   
   tar_target(
@@ -282,6 +288,32 @@ list(
     image_date_data,
     image_dates |>
       left_join(all_data_prepared, by = "date")
+  ),
+  
+  # Save plots ----
+  
+  tar_target(
+    weight_energy_plot_png,
+    ggsave(
+      filename = "plots/weight_energy_plot.png",
+      plot = weight_energy_plot,
+      device = "png",
+      dpi = 300,
+      w = 10,
+      h = 10
+    )
+  ),
+  
+  tar_target(
+    ffm_estimates_plot_png,
+    ggsave(
+      filename = "plots/ffm_estimates_plot.png",
+      plot = ffm_estimates_plot,
+      device = "png",
+      dpi = 300,
+      w = 8.5,
+      h = 8.5
+    )
   )
   
 )

@@ -31,6 +31,8 @@ image_date_data|stem|d1bc68334b05cc95|4c0ce29b769d3a00|791f172ecab5cb88|14724822
 ffm_estimate_data|stem|1d3688cb2f9fe748|a99705734c289b5a|bb4ca4934036952f|-1190426710||t20452.8547007878s|s182242b|182242|qs|local|vector|||0.04||
 ffm_percent_plot|stem|7cc0d2bb4b3a98bf|a66d9247e10bf017|586545ec5e2ce7ac|1781987951||t20452.8549290219s|s1311814b|1311814|qs|local|vector|||0.08||
 ffm_kgs_plot|stem|811067bd5a058013|642e45649ad982a8|a3598836be7ed8fe|347807795||t20452.8549328725s|s879554b|879554|qs|local|vector|||0.14||
+ffm_estimates_plot|stem|2b20a798eb732e7f|76cdce12f9afc976|40d8c18150e1489f|1767740560||t20452.8644965428s|s2199251b|2199251|qs|local|vector|||0.02||
+ffm_estimates_plot_png|stem|19f1f983ea3731b9|404e672fd6f43245|cecf6fef0b2028fc|-867829266||t20452.8651940747s|s104b|104|qs|local|vector|||1.27|A <numeric> value was passed to a Date scale. ℹ The value was converted to a <Date> object.. Removed 13 rows containing missing values or values outside the scale range (`geom_ribbon()`).. Removed 13 rows containing missing values or values outside the scale range (`geom_line()`).. Removed 13 rows containing missing values or values outside the scale range (`geom_line()`).. Removed 13 rows containing missing values or values outside the scale range (`geom_ribbon()`).. Removed 13 rows containing missing values or values outside the scale range (`geom_line()`).. Removed 2156 rows containing missing values or values outside the scale range (`geom_point()`).. Removed 2156 rows containing missing values or values outside the scale range (`geom_point()`).|
 prep_diet_data|function|40a7ba14d6438916
 calculate_energy_deficit|function|8d88cdad4b7e45a6
 prep_withings_step_data|function|6b0c4f575f6d5413
@@ -38,11 +40,11 @@ calculate_weight_loss|function|31f3936971073048
 plot_steps|function|b60d057b2cecffd3
 plot_ffm_kgs|function|a25178bc45aca396
 get_image_dates|function|20d0260831f395e6
-plot_weight|function|713e8eb997a1afd1
+plot_weight|function|df11107dbf478f66
 estimate_ffm|function|1d4d2c8027d9aafc
 plot_ffm_percent|function|77bedaae1c27aeb2
 prep_google_step_data|function|54c8a3d2e4e42eb7
-plot_weight_loss|function|17c0478fc0e8d38a
+plot_weight_loss|function|c739cb6a2204982c
 collapse_and_steps|function|bea7473f3778be3d
 plot_macros|function|3057a4d6d5dc6511
 prep_macros_data|function|96f08599e117376d
@@ -53,6 +55,7 @@ prep_macrofactor_step_data|function|881cc8fb9b57af34
 plot_kcal|function|4a488b4ef1935a0c
 calculate_steps|function|9cd7327ef5f89fab
 calculate_macros|function|b2f3e1277e93d9ef
-weight_plot|stem|49e7c7235b41df65|259c26f7839ebd54|dc3969e9091dcec7|-93017474||t20452.8605547142s|s323262b|323262|qs|local|vector|||0.05||
-weight_loss_plot|stem|8b36bb8ef367e472|82aedb338ba92a82|2381ec819d664b00|-726924651||t20452.8605576019s|s278244b|278244|qs|local|vector|||0.07||
-weight_energy_plot|stem|a8f27848a3d6f31c|4bd7a9647c20b9bf|5a00bcafb9713a06|-1673415485||t20452.8605616936s|s535031b|535031|qs|local|vector|||0||
+weight_plot|stem|0a0bbce061b38ca4|259c26f7839ebd54|05431e8cad6168e3|-93017474||t20452.8671688413s|s323307b|323307|qs|local|vector|||0.05||
+weight_loss_plot|stem|a7abba5dc96a1490|82aedb338ba92a82|1d9b348a05e9469f|-726924651||t20452.8671732173s|s278802b|278802|qs|local|vector|||0.07||
+weight_energy_plot|stem|136af30b411a02b2|4bd7a9647c20b9bf|524dc1c1caacdf84|-1673415485||t20452.8671772777s|s535069b|535069|qs|local|vector|||0.02||
+weight_energy_plot_png|stem|b6f49e3d0fcb7dd2|81e9a8674c19a6fd|0858dcd39ec6d6e7|-1799866597||t20452.8671913333s|s104b|104|qs|local|vector|||0.97|A <numeric> value was passed to a Date scale. ℹ The value was converted to a <Date> object.. Removed 1 row containing missing values or values outside the scale range (`geom_line()`).. A <numeric> value was passed to a Date scale. ℹ The value was converted to a <Date> object.. Removed 3 rows containing missing values or values outside the scale range (`geom_col()`).|
