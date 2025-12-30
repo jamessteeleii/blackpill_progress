@@ -1,0 +1,28 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+weight_data_file|stem|f2bae7545bc69881|2c5a77183d2fee5f|2c530c1562a7fbd1|-477224089|C:/Users/james/Dropbox/Steele Research Ltd/Posts/blackpill_progress/data/withings_weight.csv|t20446.4485244853s|s57040b|57040|file|local|vector|||0||
+google_step_data_file|stem|e42d10ac4d1a3397|a36d00e7c9fcd5fe|2c530c1562a7fbd1|-2016094004|C:/Users/james/Dropbox/Steele Research Ltd/Posts/blackpill_progress/data/google_fit_data.csv|t20446.4459663942s|s290917b|290917|file|local|vector|||0||
+withings_step_data_file|stem|517b0d7c4f80de34|69e73eb69d49dbd1|2c530c1562a7fbd1|371360448|C:/Users/james/Dropbox/Steele Research Ltd/Posts/blackpill_progress/data/withings_aggregates_steps.csv|t20446.4484965115s|s29155b|29155|file|local|vector|||0||
+macrofactor_data_file|stem|a922a5f8aff877e7|6a784590100b0a52|2c530c1562a7fbd1|-2111932386|C:/Users/james/Dropbox/Steele Research Ltd/Posts/blackpill_progress/data/macrofactor.xlsx|t20446.433681563s|s51492b|51492|file|local|vector|||0||
+weight_data|stem|9bd73e3f489af4b8|fad96d7f01536f24|f45ae75c61eb99d1|-342021295||t20451.5741840662s|s9270b|9270|qs|local|vector|||0.28||
+google_step_data|stem|98d1417fe1726b26|abacf9312f7bfed7|3d47a7bfa8dc5d1a|926878473||t20451.5741875265s|s8181b|8181|qs|local|vector|||0.14|One or more parsing issues, call `problems()` on your data frame for details, e.g.:   dat <- vroom(...)   problems(dat)|
+withings_step_data|stem|2df4f869e6a8b3e8|c1e63f7b3209667f|d07fdf3be2e9b85f|-314004534||t20451.57419014s|s6695b|6695|qs|local|vector|||0.08||
+diet_data|stem|d3348ae87b8d37ee|b824f780b75a88f1|c8ce4e2fb7b9c56a|-1002158522||t20451.5741920329s|s1452b|1452|qs|local|vector|||0.03||
+macrofactor_step_data|stem|7a138630ef313348|4435267e806846e3|8a6e115b70924237|1571092774||t20451.5751448287s|s819b|819|qs|local|vector|||0.06||
+tee_data|stem|438ac0eaab79a8de|8d9d2323b3485201|883144e2a91d3841|283726920||t20451.5751468489s|s532b|532|qs|local|vector|||0.03||
+all_data_wide|stem|8570dccacf127cae|90cf16a8ed3c6047|bad164df9782b446|1834478148||t20451.5751493514s|s22520b|22520|qs|local|vector|||0.06||
+bodpod_data|stem|28968ad62309f4ea|747f3f7708b83e0a|2c530c1562a7fbd1|-509983548||t20451.6118347742s|s777b|777|qs|local|vector|||0.73||
+all_data_raw|stem|4f0eb3ffb1d8f5d7|90cf16a8ed3c6047|34393170850a2ea5|1742418749||t20451.6118371475s|s22736b|22736|qs|local|vector|||0.05||
+all_data_collapsed|stem|6d6b05717f909632|2c37eed02b79ad4a|d0371268cc707805|-762158118||t20451.6149985093s|s18945b|18945|qs|local|vector|||0.66||
+prep_diet_data|function|40a7ba14d6438916
+prep_withings_step_data|function|6b0c4f575f6d5413
+estimate_ffm|function|9af5b31fff5e9000
+prep_google_step_data|function|54c8a3d2e4e42eb7
+collapse_and_steps|function|bea7473f3778be3d
+prep_weight_data|function|39b9b8541653e7c3
+prep_tee_data|function|207fe83dfa50def3
+calculate_trend_weight|function|67305e31bbe4c512
+prep_macrofactor_step_data|function|881cc8fb9b57af34
+all_data_trend_weight|stem|09ff9456187ae5dc|1941324a8cff103f|858d6fc95a8bfc53|1078075532||t20451.6205592131s|s31453b|31453|qs|local|vector|||0.03||
+all_data_prepared|stem|a29c58a7b55b5e28|765d70c2207ede60|7e277e2dc1d9f579|-698383064||t20451.620560749s|s31318b|31318|qs|local|vector|||0||
+bf_loess|stem|495b40d87cb29af9|19b1e724523296ed|3d23e64bd2239467|-819886097||t20451.6205624683s|s38210b|38210|qs|local|vector|||0||
+ffm_estimate_data|stem|1d3688cb2f9fe748|a99705734c289b5a|1068d0f899cb8ca8|-1190426710||t20451.6205643202s|s182242b|182242|qs|local|vector|||0.03||

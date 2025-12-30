@@ -1,5 +1,6 @@
 library(tidyverse)
 library(patchwork)
+library(ggtext)
 
 #### all data ----
 weight_data <- read_csv("withins_weight.csv") |>
@@ -118,14 +119,14 @@ data <- data |>
 
 fit_magee <- loess(
   magee_bf ~ as.numeric(date),
-  data = data,
+  data = all_data_prepared,
   span = 0.75,
   na.action = na.exclude
 )
 
 
-data <- data |>
-  bind_cols(as_tibble(predict(fit_magee, newdata = data$date, se=TRUE))) |>
+data <- all_data_prepared |>
+  bind_cols(as_tibble(predict(fit_magee, newdata = all_data_prepared$date, se=TRUE))) |>
   select(-residual.scale) |>
   rename(
     magee_loess_fit = "fit",
@@ -140,32 +141,64 @@ data <- data |>
   mutate(
     magee_ffm = (1-(magee_loess_fit/100)) * weight_kg,
     trend_magee_ffm = (1-(magee_loess_fit/100)) * trend_weight,
-    
-    magee_ffm_lower = (1-(magee_loess_lower/100)) * weight_kg,
     trend_magee_ffm_lower = ((1-(magee_loess_lower/100)) * trend_weight),
-    
-    magee_ffm_upper = (1-(magee_loess_upper/100)) * weight_kg,
     trend_magee_ffm_upper = ((1-(magee_loess_upper/100)) * trend_weight),
   ) 
 
 weight_ffm <- data |>
+  select(date, weight_kg, trend_weight, magee_ffm, trend_magee_ffm) |>
+  pivot_longer(2:5,
+               names_to = "raw_trend",
+               values_to = "value") |>
+  mutate(
+    variable = case_when(
+      str_detect(raw_trend, "weight") ~ "Weight",
+      str_detect(raw_trend, "ffm") ~ "Fat Free Mass"
+    ),
+    what = case_when(
+      str_detect(raw_trend, "trend") ~ "Trended",
+      .default = "Raw"
+    )
+  ) |>
+  select(-raw_trend) |>
   filter(date >= "2020-01-01") |>
   ggplot(aes(x=date)) +
-  # weight
-  geom_line(aes(y=weight_kg), colour = "gray") +
-  geom_line(aes(y=trend_weight), colour = "black") +
+  geom_point(data = data |> filter(date < "2020-01-01"), 
+             aes(y=weight_kg), color = "black", size = 1) +
+  geom_point(data = data |> filter(date < "2020-01-01"), 
+             aes(y=weight_kg), color = "gray", size = 0.5) +
   
-  # ffm
-  geom_hline(yintercept = mean(data$trend_magee_ffm, na.rm=TRUE), linetype = "dashed", alpha = 0.5, color = "black") +
-  geom_ribbon(aes(ymin=trend_magee_ffm_lower, ymax=trend_magee_ffm_upper), 
-              alpha = 0, color = "red", linewidth = 0.25) +
-  geom_line(aes(y=magee_ffm), color = "red", alpha = 0.25) +
-  geom_line(aes(y=trend_magee_ffm), color = "red") +
+  geom_point(data = data |> filter(date < "2020-01-01"), 
+             aes(y=magee_ffm), color = "black", size = 1) +
+  geom_point(data = data |> filter(date < "2020-01-01"), 
+             aes(y=magee_ffm), color = "#CC79A7", size = 0.5) +
+  
+  annotate("text", x = as.numeric(ymd("2015-01-01")), y = 65,
+           size = 2,
+           label = "Note, dots pre-2020 are body mass and FFM at timepoints of prior Bodpod measurements") +
+  
+  geom_ribbon(data = data |>   filter(date >= "2020-01-01"),
+              aes(ymin=trend_magee_ffm_lower, ymax=trend_magee_ffm_upper), 
+              alpha = 0.25, color = "#CC79A7", fill = "#CC79A7", linewidth = 0.25) +
+  geom_line(aes(y=value, colour = interaction(variable, what))) +
+  scale_color_manual(values = c("#fca7cd", "gray", "#CC79A7", "black")) +
+  
   scale_x_date(limits = ymd(c("2010-01-01", "2025-12-18"))) +
   labs(
     y = "Weight (kg)",
-    x = "Time"
+    x = "Time",
+    color = "",
+    title = "Body mass data & fat free mass estimates (kg)",
+    subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*<br>Estimates for fat free mass are calculated from estimated FFM% LOESS regression point prediction (see bottom plot) and either <span style='color:#fca7cd;'>raw</span> or <span style='color:#CC79A7;'>**trended**</span> body mass<br><span style='color:#CC79A7;'>Ribbon</span> about the fat free mass estimates are based on the upper and lower 95% confidence intervals from LOESS regression and trended body mass"
+  ) +
+  guides(
+    color = "none"
+  ) +
+  theme_bw() +
+  theme(
+    plot.subtitle = ggtext::element_markdown(size = 8)
   )
+  
 
 ffm_loess <- tibble(
     date = seq(min(data$date), max(data$date), by = "day")
@@ -174,19 +207,26 @@ ffm_loess <- tibble(
   ggplot(aes(x=date)) +
   geom_hline(yintercept = mean(100 - data$magee_bf, na.rm=TRUE), linetype = "dashed", alpha = 0.5, color = "black") +
   geom_ribbon(aes(ymin=100-(fit-qt(0.975,df)*se.fit), ymax=100-(fit+qt(0.975,df)*se.fit)),
-              alpha = 0.25, color = "red", fill = "red") +
-  geom_line(aes(y=100-fit), color = "red") +
+              alpha = 0.25, color = "#CC79A7", fill = "#CC79A7") +
+  geom_line(aes(y=100-fit), color = "#CC79A7") +
   geom_point(data = data, aes(y=100-magee_bf), color = "black", size = 2) +
-  geom_point(data = data, aes(y=100-magee_bf), color = "red", size = 1) +
+  geom_point(data = data, aes(y=100-magee_bf), color = "#CC79A7", size = 1) +
   labs(
     y = "FFM (%)",
-    x = "Time"
+    x = "Time",
+    title = "Fat free mass estimates (%)",
+    subtitle = "LOESS regression (span = 0.75) with 95% confidence intervals\nDashed line represents mean of all estimates"
+  ) +
+  theme_bw() +
+  theme(
+    plot.subtitle = element_text(size = 8)
   )
 
 
 
 
-weight_ffm / ffm_loess
+(weight_ffm / ffm_loess) +
+  plot_annotation(caption = "*This is the same as used in MacroFactors trended weight")
 
 
 

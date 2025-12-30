@@ -9,54 +9,189 @@ library(targets)
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble") # Packages that your targets need for their tasks.
-  # format = "qs", # Optionally set the default storage format. qs is fast.
-  #
-  # Pipelines that take a long time to run may benefit from
-  # optional distributed computing. To use this capability
-  # in tar_make(), supply a {crew} controller
-  # as discussed at https://books.ropensci.org/targets/crew.html.
-  # Choose a controller that suits your needs. For example, the following
-  # sets a controller that scales up to a maximum of two workers
-  # which run as local R processes. Each worker launches when there is work
-  # to do and exits if 60 seconds pass with no tasks to run.
-  #
-  #   controller = crew::crew_controller_local(workers = 2, seconds_idle = 60)
-  #
-  # Alternatively, if you want workers to run on a high-performance computing
-  # cluster, select a controller from the {crew.cluster} package.
-  # For the cloud, see plugin packages like {crew.aws.batch}.
-  # The following example is a controller for Sun Grid Engine (SGE).
-  #
-  #   controller = crew.cluster::crew_controller_sge(
-  #     # Number of workers that the pipeline can scale up to:
-  #     workers = 10,
-  #     # It is recommended to set an idle time so workers can shut themselves
-  #     # down if they are not running tasks.
-  #     seconds_idle = 120,
-  #     # Many clusters install R as an environment module, and you can load it
-  #     # with the script_lines argument. To select a specific verison of R,
-  #     # you may need to include a version string, e.g. "module load R/4.3.2".
-  #     # Check with your system administrator if you are unsure.
-  #     script_lines = "module load R"
-  #   )
-  #
-  # Set other options as needed.
+  packages = c(
+    "tidyverse",
+    "here",
+    "patchwork"
+    "ggtext"
+  ),
+  memory = "transient",
+  format = "qs",
+  garbage_collection = TRUE,
+  storage = "worker",
+  retrieval = "worker"
 )
 
-# Run the R scripts in the R/ folder with your custom functions:
-tar_source()
-# tar_source("other_functions.R") # Source other scripts as needed.
+
+tar_source("R/functions/.")
+# tar_source("R/other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
 list(
+
+  # Read in and prepare each data source ----
   tar_target(
-    name = data,
-    command = tibble(x = rnorm(100), y = rnorm(100))
-    # format = "qs" # Efficient storage for general data objects.
+    weight_data_file,
+    here("data", "withings_weight.csv"),
+    format = "file"
   ),
+  
   tar_target(
-    name = model,
-    command = coefficients(lm(y ~ x, data = data))
+    weight_data,
+    prep_weight_data(weight_data_file)
+  ),
+  
+  tar_target(
+    withings_step_data_file,
+    here("data", "withings_aggregates_steps.csv"),
+    format = "file"
+  ),
+  
+  tar_target(
+    withings_step_data,
+    prep_withings_step_data(withings_step_data_file)
+  ),
+  
+  tar_target(
+    google_step_data_file,
+    here("data", "google_fit_data.csv"),
+    format = "file"
+  ),
+  
+  tar_target(
+    google_step_data,
+    prep_google_step_data(google_step_data_file)
+  ),
+  
+  tar_target(
+    macrofactor_data_file,
+    here("data", "macrofactor.xlsx"),
+    format = "file"
+  ),
+  
+  tar_target(
+    diet_data,
+    prep_diet_data(macrofactor_data_file)
+  ),
+  
+  tar_target(
+    tee_data,
+    prep_tee_data(macrofactor_data_file)
+  ),
+  
+  tar_target(
+    macrofactor_step_data,
+    prep_macrofactor_step_data(macrofactor_data_file)
+  ),
+  
+  tar_target(
+    bodpod_data,
+    # create bodpod data
+    tibble(
+      date = ydm(
+        c(
+          "2010-07-01",
+          "2011-10-02",
+          "2014-09-06",
+          "2015-08-05",
+          "2015-12-06",
+          "2017-01-11",
+          "2023-01-03",
+          "2025-05-12"
+        )
+      ),
+      weight_kg = c(
+        68.336,
+        67.800,
+        70.774,
+        72.066,
+        NA_real_,
+        NA_real_,
+        NA_real_,
+        70.561
+      ),
+      volume_L_1 = c(
+        61.984,
+        64.857,
+        60.372,
+        62.115,
+        64.282,
+        63.373,
+        60.393,
+        60.328
+      ),
+      volume_L_2 = c(
+        62.1,
+        64.688,
+        60.661,
+        62.185,
+        64.277,
+        63.206,
+        60.571,
+        60.422
+      ),
+      density_kg_L = c(
+        1.0887,
+        1.0782,
+        1.0770,
+        1.0802,
+        1.0866,
+        1.0872,
+        1.0790,
+        1.0932
+      )
+    ) |>
+      mutate(
+        weight_kg = if_else(is.na(weight_kg), mean(c(volume_L_1, volume_L_2)) * density_kg_L, weight_kg),
+        siri_bf = ((4.95/density_kg_L)-4.50)*100,
+        brozek_bf = ((4.57/density_kg_L)-4.142)*100,
+        magee_bf = 21.125 - (280.823 * (density_kg_L-1.058))
+      )
+  ),
+  
+  tar_target(
+    all_data_raw,
+    data <- full_join(weight_data, withings_step_data, by = "date") |>
+      full_join(google_step_data, by = "date") |>
+      full_join(macrofactor_step_data, by = "date") |>
+      full_join(bodpod_data, by = "date") |>
+      full_join(diet_data, by = "date") |>
+      full_join(tee_data, by = "date")
+  ),
+  
+  # collapse to single row per date and handle multiple step sources
+  tar_target(
+    all_data_collapsed,
+    collapse_and_steps(all_data_raw)
+  ),
+  
+  # calculate trend weight and add to data
+  tar_target(
+    all_data_trend_weight,
+    calculate_trend_weight(all_data_collapsed)
+  ),
+  
+  # filter to date of DEXA post cut
+  tar_target(
+    all_data_prepared,
+    all_data_trend_weight |>
+      filter(date <= "2025-12-18")
+  ),
+  
+  # Fat free mass estimates ----
+  
+  tar_target(
+    bf_loess,
+    fit_magee <- loess(
+      magee_bf ~ as.numeric(date), # use the Magee model for bodpod density data
+      data = all_data_prepared,
+      na.action = na.exclude
+    )
+  ),
+  
+  tar_target(
+    ffm_estimate_data,
+    estimate_ffm(all_data_prepared, bf_loess)
   )
+  
 )
