@@ -134,12 +134,12 @@ plot_weight_loss <- function(data, weight_loss) {
       aes(y = weight_kg, colour = "Raw Scale Weight"),
     ) +
     geom_line(
-      aes(y = trend_weight, colour = "Trend Weight"),
+      aes(y = trend_weight, colour = "Trend Weight*"),
     ) +
     scale_colour_manual(
       name = NULL,
       values = c("Raw Scale Weight" = "grey70",
-                 "Trend Weight" = "black")
+                 "Trend Weight*" = "black")
     ) +
     annotate("text",
              x = as.numeric(ymd("2025-11-15")),
@@ -149,7 +149,7 @@ plot_weight_loss <- function(data, weight_loss) {
     labs(
       y = "Weight (kg)",
       x = "Time",
-      title = "Scale and trend weight during cut"
+      title = "Scale and trend weight* during cut"
     ) +
     theme_bw() +
     theme(legend.position = "bottom")
@@ -303,8 +303,34 @@ plot_macros <- function(data, macros_averages) {
 }
 
 # Longer term reflection
+plot_weight <- function(data) {
+  weight_plot <- data |>
+    filter(date >= "2020-01-01") |>
+    ggplot(aes(x=date)) +
+    geom_line(
+      aes(y = weight_kg, colour = "Raw Scale Weight"),
+    ) +
+    geom_line(
+      aes(y = trend_weight, colour = "Trend Weight"),
+    ) +
+    scale_colour_manual(
+      name = NULL,
+      values = c("Raw Scale Weight" = "grey70",
+                 "Trend Weight" = "black")
+    ) +
+    labs(
+      y = "Weight (kg)",
+      x = "Time",
+      title = "Scale and trend weight from 2020 to 2025"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  return(weight_plot)
+}
+
 estimate_ffm <- function(data, bf_loess) {
-  data <- data |>
+  ffm_data <- data |>
     bind_cols(as_tibble(predict(bf_loess, newdata = data$date, se=TRUE))) |>
     select(-residual.scale) |>
     rename(
@@ -327,6 +353,95 @@ estimate_ffm <- function(data, bf_loess) {
       magee_ffm_upper = (1-(magee_loess_upper/100)) * weight_kg,
       trend_magee_ffm_upper = ((1-(magee_loess_upper/100)) * trend_weight),
     ) 
+  
+  return(ffm_data)
+}
+
+plot_ffm_percent <- function(data, bf_loess) {
+  ffm_percent_plot <- tibble(
+    date = seq(min(data$date), max(data$date), by = "day")
+  ) |>
+    bind_cols(as_tibble(predict(bf_loess, newdata = seq(min(data$date), max(data$date), by = "day"), se=TRUE))) |>
+    ggplot(aes(x=date)) +
+    geom_hline(yintercept = mean(100 - data$magee_bf, na.rm=TRUE), linetype = "dashed", alpha = 0.5, color = "black") +
+    geom_ribbon(aes(ymin=100-(fit-qt(0.975,df)*se.fit), ymax=100-(fit+qt(0.975,df)*se.fit)),
+                alpha = 0.25, color = "#CC79A7", fill = "#CC79A7") +
+    geom_line(aes(y=100-fit), color = "#CC79A7") +
+    geom_point(data = data, aes(y=100-magee_bf), color = "black", size = 2) +
+    geom_point(data = data, aes(y=100-magee_bf), color = "#CC79A7", size = 1) +
+    labs(
+      y = "FFM (%)",
+      x = "Time",
+      title = "Fat free mass (%) estimates from historical bodpod data\u2020",
+      subtitle = "LOESS regression (span = 0.75) with 95% confidence intervals\nDashed line represents mean of all estimates"
+    ) +
+    theme_bw() +
+    theme(
+      plot.subtitle = element_text(size = 8)
+    )
+  
+  return(ffm_percent_plot)
+}
+
+plot_ffm_kgs <- function(data) {
+  ffm_kgs_plot <- data |>
+    select(date, weight_kg, trend_weight, magee_ffm, trend_magee_ffm) |>
+    filter(date >= "2020-01-01") |>
+    ggplot(aes(x=date)) +
+    geom_point(data = data |> filter(date < "2020-01-01"), 
+               aes(y=weight_kg), color = "black", size = 1) +
+    geom_point(data = data |> filter(date < "2020-01-01"), 
+               aes(y=weight_kg), color = "gray", size = 0.5) +
+    
+    geom_point(data = data |> filter(date < "2020-01-01"), 
+               aes(y=magee_ffm), color = "black", size = 1) +
+    geom_point(data = data |> filter(date < "2020-01-01"), 
+               aes(y=magee_ffm), color = "#CC79A7", size = 0.5) +
+    
+    annotate("text", x = as.numeric(ymd("2015-01-01")), y = 65,
+             size = 2,
+             label = "Note, dots pre-2020 are body mass and FFM estimate at timepoints of prior Bodpod measurements") +
+    
+    geom_ribbon(data = data |> filter(date >= "2020-01-01"),
+                aes(ymin=trend_magee_ffm_lower, ymax=trend_magee_ffm_upper, fill = "FFM Estimate 95%CI\n(based on trend weight)"), 
+                alpha = 0.25, linewidth = 0.25) +
+    
+    geom_line(aes(y=weight_kg, colour = "Raw Scale Weight")) +
+    geom_line(aes(y=trend_weight, colour = "Trend Weight")) +
+    
+    geom_line(aes(y=magee_ffm, colour = "FFM Estimate\n(based on raw scale weight)")) +
+    geom_line(aes(y=trend_magee_ffm, colour = "FFM Estimate\n(based on trend weight)")) +
+    
+    scale_colour_manual(
+      name = NULL,
+      breaks = c("Raw Scale Weight", "Trend Weight", 
+                 "FFM Estimate\n(based on raw scale weight)",
+                 "FFM Estimate\n(based on trend weight)"),
+      
+      values = c("Raw Scale Weight" = "grey70",
+                 "Trend Weight" = "black",
+                 "FFM Estimate\n(based on raw scale weight)" = "#fca7cd",
+                 "FFM Estimate\n(based on trend weight)" = "#CC79A7")
+    ) +
+    scale_fill_manual(
+      name = NULL,
+      values = c("FFM Estimate 95%CI\n(based on trend weight)" = "#CC79A7")
+    ) +
+    scale_x_date(limits = ymd(c("2010-01-01", "2025-12-18"))) +
+    labs(
+      y = "Weight (kg)",
+      x = "Time",
+      color = "",
+      title = "Historical weight data & fat free mass estimates (kg)",
+      subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*<br>Estimates for fat free mass are calculated from estimated FFM% LOESS regression point prediction (see bottom plot) and either <span style='color:#fca7cd;'>raw</span> or <span style='color:#CC79A7;'>**trended**</span> body mass<br><span style='color:#CC79A7;'>Ribbon</span> about the fat free mass estimates are based on the upper and lower 95% confidence intervals from LOESS regression and trended body mass"
+    ) +
+    theme_bw() +
+    theme(
+      plot.subtitle = ggtext::element_markdown(size = 8),
+      legend.position = "top"
+    )
+  
+  return(ffm_kgs_plot)
 }
 
 get_image_dates <- function() {
@@ -348,7 +463,11 @@ get_image_dates <- function() {
         tz = "UTC"
       )
     ) |>
+    mutate(
+      date = round_date(ymd_hms(date), unit = "day")
+    ) |>
     select(file_name, date) 
   
   return(dates)
 }
+

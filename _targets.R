@@ -208,7 +208,8 @@ list(
   
   tar_target(
     weight_energy_plot,
-    weight_loss_plot / kcal_plot
+    (weight_loss_plot / kcal_plot) +
+      plot_annotation(caption = "*This is the same as used in MacroFactors trended weight")
   ),
   
   tar_target(
@@ -239,6 +240,11 @@ list(
   
   # Longer term reflection ----
   
+  # Weight
+  tar_target(
+    weight_plot,
+    plot_weight(all_data_prepared)
+  ),
   
   # Fat free mass
   tar_target(
@@ -255,11 +261,27 @@ list(
     estimate_ffm(all_data_prepared, bf_loess)
   ),
   
+  tar_target(
+    ffm_percent_plot,
+    plot_ffm_percent(ffm_estimate_data, bf_loess)
+  ),
+  
+  tar_target(
+    ffm_kgs_plot,
+    plot_ffm_kgs(ffm_estimate_data)
+  ),
+  
   # Are my biceps bigger? lol
   
   tar_target(
     image_dates,
     get_image_dates()
+  ),
+  
+  tar_target(
+    image_date_data,
+    image_dates |>
+      left_join(all_data_prepared, by = "date")
   )
   
 )
