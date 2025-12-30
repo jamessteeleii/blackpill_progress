@@ -328,3 +328,27 @@ estimate_ffm <- function(data, bf_loess) {
       trend_magee_ffm_upper = ((1-(magee_loess_upper/100)) * trend_weight),
     ) 
 }
+
+get_image_dates <- function() {
+  exif_data <- exifr::read_exif("data/photos/",
+                                recursive = TRUE)
+  
+  
+  dates <- exif_data[, c(
+    "FileName",
+    "DateTimeOriginal",
+    "CreateDate",
+    "ModifyDate"
+  )] |>
+    janitor::clean_names() |>
+    mutate(
+      date = as.POSIXct(
+        date_time_original,
+        format = "%Y:%m:%d %H:%M:%S",
+        tz = "UTC"
+      )
+    ) |>
+    select(file_name, date) 
+  
+  return(dates)
+}

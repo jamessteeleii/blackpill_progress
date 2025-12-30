@@ -237,8 +237,10 @@ list(
   ),
   
   
-  # Fat free mass estimates ----
+  # Longer term reflection ----
   
+  
+  # Fat free mass
   tar_target(
     bf_loess,
     fit_magee <- loess(
@@ -251,6 +253,13 @@ list(
   tar_target(
     ffm_estimate_data,
     estimate_ffm(all_data_prepared, bf_loess)
+  ),
+  
+  # Are my biceps bigger? lol
+  
+  tar_target(
+    image_dates,
+    get_image_dates()
   )
   
 )

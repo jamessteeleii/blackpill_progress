@@ -25,11 +25,17 @@ weight_loss_plot|stem|4ac28a3e1857b063|82aedb338ba92a82|f7086c45a8f80549|-726924
 weight_energy_plot|stem|dca85650bfa7cc6a|d6353672688f682c|ed510f8cd72e7553|-1673415485||t20452.7851724798s|s520892b|520892|qs|local|vector|||0.02||
 steps|stem|fcb530d5eed49286|f8bd167f9af4fdfb|5f7e16915654698f|1920602753||t20452.7902111607s|s205b|205|qs|local|vector|||0||
 macros|stem||22735fa4388dbf64|58bc29a023765c77|2067302701||t20452.7902134753s||0|qs|local|vector|||0.06||Must group by variables found in `.data`. ✖ Column `macro` is not found.
+macros_data|stem|050604f0e5befbda|e32bf37fe1862626|7aa6cdccdd1a26cc|1262072794||t20452.7905724065s|s1321b|1321|qs|local|vector|||0.02||
+steps_plot|stem|b4e09086fd70028f|8b99e063d9276cf2|03e5453a3ceeec7d|1066141786||t20452.7905751822s|s243656b|243656|qs|local|vector|||0.05||
+macros_averages|stem|fae90fd44ab03f3f|8c107f5d244b983f|bd274a1051d25434|-727254240||t20452.7905770136s|s284b|284|qs|local|vector|||0.01||
+macros_plot|stem|0cbcda6f4175a225|2af4c68aa284a673|d069b786b1da2f68|-605750313||t20452.7905800047s|s354052b|354052|qs|local|vector|||0.08||
+image_dates|stem|0b6a3658e9056989|428cefac92e9e266|744520475e8b9f64|1821890049||t20452.8216706836s|s440b|440|qs|local|vector|||2.62||
 prep_diet_data|function|40a7ba14d6438916
 calculate_energy_deficit|function|8d88cdad4b7e45a6
 prep_withings_step_data|function|6b0c4f575f6d5413
 calculate_weight_loss|function|31f3936971073048
 plot_steps|function|b60d057b2cecffd3
+get_image_dates|function|19f15b8c25c18007
 estimate_ffm|function|9af5b31fff5e9000
 prep_google_step_data|function|54c8a3d2e4e42eb7
 plot_weight_loss|function|a4eaaeb6e8d9c233
@@ -43,7 +49,3 @@ prep_macrofactor_step_data|function|881cc8fb9b57af34
 plot_kcal|function|4a488b4ef1935a0c
 calculate_steps|function|9cd7327ef5f89fab
 calculate_macros|function|b2f3e1277e93d9ef
-macros_data|stem|050604f0e5befbda|e32bf37fe1862626|7aa6cdccdd1a26cc|1262072794||t20452.7905724065s|s1321b|1321|qs|local|vector|||0.02||
-steps_plot|stem|b4e09086fd70028f|8b99e063d9276cf2|03e5453a3ceeec7d|1066141786||t20452.7905751822s|s243656b|243656|qs|local|vector|||0.05||
-macros_averages|stem|fae90fd44ab03f3f|8c107f5d244b983f|bd274a1051d25434|-727254240||t20452.7905770136s|s284b|284|qs|local|vector|||0.01||
-macros_plot|stem|0cbcda6f4175a225|2af4c68aa284a673|d069b786b1da2f68|-605750313||t20452.7905800047s|s354052b|354052|qs|local|vector|||0.08||
