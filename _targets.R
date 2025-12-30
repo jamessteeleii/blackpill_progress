@@ -227,8 +227,8 @@ list(
   ),
   
   tar_target(
-    macros,
-    calculate_macros(cut_data)
+    macros_averages,
+    calculate_macros(macros_data)
   ),
   
   tar_target(

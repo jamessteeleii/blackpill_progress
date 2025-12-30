@@ -266,7 +266,7 @@ calculate_macros <- function(data) {
   return(macros_averages)
 }
 
-plot_macros <- funtion(data, macros_averages) {
+plot_macros <- function(data, macros_averages) {
   macros_plot <- data |>
     ggplot(aes(x=date, y=grams)) +
     geom_col(aes(fill=macro)) +
