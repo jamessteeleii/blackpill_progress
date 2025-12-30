@@ -12,7 +12,7 @@ tar_option_set(
   packages = c(
     "tidyverse",
     "here",
-    "patchwork"
+    "patchwork",
     "ggtext"
   ),
   memory = "transient",
@@ -208,7 +208,32 @@ list(
   
   tar_target(
     weight_energy_plot,
-    weight_plot / kcal_plot
+    weight_loss_plot / kcal_plot
+  ),
+  
+  tar_target(
+    steps,
+    calculate_steps(cut_data)
+  ),
+  
+  tar_target(
+    steps_plot,
+    plot_steps(cut_data, steps)
+  ),
+  
+  tar_target(
+    macros_data,
+    prep_macros_data(cut_data)
+  ),
+  
+  tar_target(
+    macros,
+    calculate_macros(cut_data)
+  ),
+  
+  tar_target(
+    macros_plot,
+    plot_macros(cut_data, macros_averages)
   ),
   
   

@@ -205,6 +205,103 @@ plot_kcal <- function(data, energy_deficit) {
   return(kcal_plot)
 }
 
+calculate_steps <- function(data) {
+  steps <- data |>
+    summarise(
+      mean_steps = mean(steps, na.rm=TRUE),
+      sd_steps = sd(steps, na.rm=TRUE)
+    )
+  
+  return(steps)
+}
+
+plot_steps <- function(data, steps) {
+  steps_plot <- data |>
+    ggplot(aes(x=date, y=steps)) +
+    geom_col(color = "black", fill = "grey70") +
+    geom_text(
+      data = steps,
+      aes(
+        x = as.numeric(ymd("2025-10-30")),
+        y = 22500,
+        label = glue::glue("Mean (SD) = {round(mean_steps)} ({round(sd_steps)}) steps")
+      )
+    ) +
+    scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+    labs(
+      y = "Total steps",
+      x = "Time",
+      title = "Total daily steps during cut"
+    ) +
+    theme_bw()
+  
+  return(steps_plot)
+}
+
+prep_macros_data <- function(data) {
+  macros_data <- data |>
+    select(date, fat_g, carbs_g, protein_g) |>
+    pivot_longer(2:4,
+                 names_to = "macro",
+                 values_to = "grams") |>
+    mutate(
+      macro = case_when(
+        macro == "carbs_g" ~ "Carbohydrates",
+        macro == "fat_g" ~ "Fats",
+        macro == "protein_g" ~ "Proteins"
+      )
+    )
+  
+  return(macros_data)
+}
+
+calculate_macros <- function(data) {
+  macros_averages <- data |>
+    group_by(macro) |>
+    summarise(
+      mean_g = mean(grams, na.rm=TRUE),
+      sd_g = sd(grams, na.rm=TRUE)
+    )
+  
+  return(macros_averages)
+}
+
+plot_macros <- funtion(data, macros_averages) {
+  macros_plot <- data |>
+    ggplot(aes(x=date, y=grams)) +
+    geom_col(aes(fill=macro)) +
+    ggh4x::facet_wrap2("macro", scales = "free_y") +
+    ggh4x::facetted_pos_scales(
+      y = list(
+        NULL,
+        NULL,
+        scale_y_continuous(expand = expansion(mult = c(0, 0.25)))
+      )
+    ) +
+    geom_text(
+      data = macros_averages,
+      aes(
+        x = Inf,
+        y = Inf,
+        label = glue::glue("Mean (SD) = {round(mean_g)} ({round(sd_g)}) grams")
+      ),
+      vjust = 3, hjust = 1.5,
+      size = 2
+    ) +
+    scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+    scale_fill_manual(values = c("#08C343", "#FFD15F", "#CE5400")) +
+    labs(
+      y = "Intake (grams)",
+      x = "Time",
+      title = "Total macronutrient intake during cut",
+      fill = "Macronutrient"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  return(macros_plot)
+}
+
 # Longer term reflection
 estimate_ffm <- function(data, bf_loess) {
   data <- data |>
