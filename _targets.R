@@ -234,7 +234,16 @@ list(
   
   tar_target(
     macros_plot,
-    plot_macros(cut_data, macros_averages)
+    plot_macros(macros_data, macros_averages)
+  ),
+  
+  tar_target(
+    avg_protein_g_kg,
+    cut_data |>
+      summarise(
+        min_protein_g_kg = mean(protein_g, na.rm = TRUE) / max(trend_weight, na.rm = TRUE),
+        max_protein_g_kg = mean(protein_g, na.rm = TRUE) / min(trend_weight, na.rm = TRUE) 
+      )
   ),
   
   
@@ -287,7 +296,8 @@ list(
   tar_target(
     image_date_data,
     image_dates |>
-      left_join(all_data_prepared, by = "date")
+      left_join(all_data_prepared, by = "date") |>
+      select(file_name, date, weight_kg, trend_weight)
   ),
   
   # Save plots ----
@@ -299,8 +309,56 @@ list(
       plot = weight_energy_plot,
       device = "png",
       dpi = 300,
-      w = 10,
-      h = 10
+      w = 8.5,
+      h = 8.5
+    )
+  ),
+  
+  tar_target(
+    steps_plot_png,
+    ggsave(
+      filename = "plots/steps_plot.png",
+      plot = steps_plot,
+      device = "png",
+      dpi = 300,
+      w = 8.5,
+      h = 4.25
+    )
+  ),
+  
+  tar_target(
+    macros_plot_png,
+    ggsave(
+      filename = "plots/macros_plot.png",
+      plot = macros_plot,
+      device = "png",
+      dpi = 300,
+      w = 8.5,
+      h = 4.25
+    )
+  ),
+  
+  tar_target(
+    weight_plot_png,
+    ggsave(
+      filename = "plots/weight_plot.png",
+      plot = weight_plot,
+      device = "png",
+      dpi = 300,
+      w = 8.5,
+      h = 4.25
+    )
+  ),
+  
+  tar_target(
+    ffm_percent_plot_png,
+    ggsave(
+      filename = "plots/ffm_percent_plot.png",
+      plot = ffm_percent_plot,
+      device = "png",
+      dpi = 300,
+      w = 8.5,
+      h = 4.25
     )
   ),
   

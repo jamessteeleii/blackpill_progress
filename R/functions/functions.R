@@ -153,7 +153,10 @@ plot_weight_loss <- function(data, weight_loss) {
       subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*"
     ) +
     theme_bw() +
-    theme(legend.position = "bottom")
+    theme(
+      plot.subtitle = ggtext::element_markdown(size = 8),
+      legend.position = "bottom"
+    )
   
   return(weight_plot)
 }
@@ -276,18 +279,21 @@ plot_macros <- function(data, macros_averages) {
       y = list(
         NULL,
         NULL,
-        scale_y_continuous(expand = expansion(mult = c(0, 0.25)))
+        scale_y_continuous(
+          expand = expansion(mult = c(0.05, 0.25))
+        )
       )
     ) +
     geom_text(
       data = macros_averages,
       aes(
-        x = Inf,
+        x = min(data$date) + ((max(data$date) - min(data$date))/2),
         y = Inf,
         label = glue::glue("Mean (SD) = {round(mean_g)} ({round(sd_g)}) grams")
       ),
-      vjust = 3, hjust = 1.5,
-      size = 2
+      vjust = 3, 
+      # hjust = 1.5,
+      size = 3
     ) +
     scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
     scale_fill_manual(values = c("#08C343", "#FFD15F", "#CE5400")) +
@@ -327,7 +333,10 @@ plot_weight <- function(data) {
       caption = "*This is the same as used in MacroFactors trended weight"
     ) +
     theme_bw() +
-    theme(legend.position = "bottom")
+    theme(
+      plot.subtitle = ggtext::element_markdown(size = 8),
+      legend.position = "bottom"
+    )
   
   return(weight_plot)
 }
