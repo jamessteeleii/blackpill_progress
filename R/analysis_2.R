@@ -113,7 +113,138 @@ data <- data |>
 
 data <- data |>
   filter(date <= "2025-12-18")
+
+
+#### Cut phase
+
+cut_data <- all_data_prepared |>
+  filter(date >= "2025-09-03")
+
+weight_loss <- cut_data |>
+  arrange(date) |>
+  summarise(
+    start_weight = first(trend_weight),
+    end_weight = last(trend_weight)
+  ) |>
+  mutate(
+    loss = start_weight - end_weight
+  )
+
+weight_plot <- cut_data |>
+  ggplot(aes(x=date)) +
+  geom_line(
+    aes(y = weight_kg, colour = "Raw Scale Weight"),
+  ) +
+  geom_line(
+    aes(y = trend_weight, colour = "Trend Weight"),
+  ) +
+  scale_colour_manual(
+    name = NULL,
+    values = c("Raw Scale Weight" = "grey70",
+               "Trend Weight" = "black")
+  ) +
+  annotate("text",
+           x = as.numeric(ymd("2025-11-15")),
+           y = 75,
+           label = glue::glue("Start weight = {round(weight_loss$start_weight,2)} kg\nEnd weight = {round(weight_loss$end_weight,2)} kg\nWeight loss = {round(weight_loss$loss,2)} kg")) +
+  scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+  labs(
+    y = "Weight (kg)",
+    x = "Time",
+    title = "Scale and trend weight during cut"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
   
+energy_deficit <- cut_data |>
+  mutate(
+    energy_diff = calories_kcal - expenditure
+  ) |>
+  summarise(
+    average_diff = mean(energy_diff, na.rm=TRUE),
+    sd_diff = sd(energy_diff, na.rm=TRUE)
+  )
+
+kcal_plot <- cut_data |>
+  ggplot(aes(x=date, y=calories_kcal)) +
+  geom_col(
+    aes(y = calories_kcal, fill = "Intake"),
+    color = "black"
+  ) +
+  geom_line(
+    aes(y = expenditure, colour = "Expenditure"),
+    linewidth = 1
+  ) +
+  scale_fill_manual(
+    name = NULL,
+    values = c("Intake" = "grey70")
+  ) +
+  scale_colour_manual(
+    name = NULL,
+    values = c("Expenditure" = "red")
+  ) +
+  annotate("text",
+           x = as.numeric(ymd("2025-10-01")),
+           y = 7000,
+           label = glue::glue("Mean (SD) energy deficit = {round(energy_deficit$average_diff)} ({round(energy_deficit$sd_diff)}) kcal")) +
+  scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+  labs(
+    y = "Energy (kcal)",
+    x = "Time",
+    title = "Total energy intake and expenditure during cut"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+
+weight_plot / kcal_plot
+
+macros_data <- cut_data |>
+  select(date, fat_g, carbs_g, protein_g) |>
+  pivot_longer(2:4,
+               names_to = "macro",
+               values_to = "grams") |>
+  mutate(
+    macro = case_when(
+      macro == "carbs_g" ~ "Carbohydrates",
+      macro == "fat_g" ~ "Fats",
+      macro == "protein_g" ~ "Proteins"
+    )
+  )
+
+macros_averages <- macros_data |>
+  group_by(macro) |>
+  summarise(
+    mean_g = mean(grams, na.rm=TRUE),
+    sd_g = sd(grams, na.rm=TRUE)
+  )
+
+macros_plot <- macros_data |>
+  ggplot(aes(x=date, y=grams)) +
+  geom_col(aes(fill=macro)) +
+  ggh4x::facet_wrap2("macro", scales = "free_y") +
+  geom_text(
+    data = macros_averages,
+    aes(
+      x = Inf,
+      y = Inf,
+      label = glue::glue("Mean (SD) = {round(mean_g)} ({round(sd_g)}) grams")
+    ),
+    vjust = 3, hjust = 1.5,
+    size = 2
+  ) +
+  scale_x_date(limits = ymd(c("2025-09-03", "2025-12-18"))) +
+  scale_fill_manual(values = c("#08C343", "#FFD15F", "#CE5400")) +
+  labs(
+    y = "Intake (grams)",
+    x = "Time",
+    title = "Total macronutrient intake during cut",
+    fill = "Macronutrient"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+  
+
 
 #### FFM estimates
 
