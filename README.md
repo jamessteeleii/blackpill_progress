@@ -5,7 +5,7 @@ Data and analysis pertaining to my progress, or lack thereof, over time in terms
 ![](images/morpheus.png)
 
 ## Reproducibility
-This repository contains the necessary files and code to reproduce the analyses, figures, and the manuscript. 
+This repository contains the necessary files and code to reproduce the analyses and figures. 
 
 ## Usage
 To reproduce the analyses, you will need to have R (https://cran.r-project.org/) and RStudio (https://www.rstudio.com/products/rstudio/download/#download) installed on your computer.
@@ -16,7 +16,7 @@ To help with reproducibility, this project uses the `renv` R package (see https:
 install.packages("renv")
 ```
 
-Once you have `renv` installed, you can get a copy of this repository on your machine by clicking the green Code button then choose Download zip. Save to your machine and extract. After extraction, double click the `blacpill_progress.Rproj` file in the root directory. This will automatically open RStudio. This will ensure all paths work on your system as the working directory will be set to the location of the `.Rproj` file. Upon opening, RStudio will recognize the `renv` files and you will be informed that the project library is out of sync with the lockfile. At shown in the console pane of RStudio, running `renv::restore()` will install the packages recorded in the lockfile. This could take some time depending on your machine and internet connection.
+Once you have `renv` installed, you can get a copy of this repository on your machine by clicking the green Code button then choose Download zip. Save to your machine and extract. After extraction, double click the `blackpill_progress.Rproj` file in the root directory. This will automatically open RStudio. This will ensure all paths work on your system as the working directory will be set to the location of the `.Rproj` file. Upon opening, RStudio will recognize the `renv` files and you will be informed that the project library is out of sync with the lockfile. At shown in the console pane of RStudio, running `renv::restore()` will install the packages recorded in the lockfile. This could take some time depending on your machine and internet connection.
 
 ## Targets analysis pipeline
 
