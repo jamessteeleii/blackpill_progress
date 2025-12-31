@@ -311,20 +311,6 @@ data <- all_data_prepared |>
 
 weight_ffm <- data |>
   select(date, weight_kg, trend_weight, magee_ffm, trend_magee_ffm) |>
-  pivot_longer(2:5,
-               names_to = "raw_trend",
-               values_to = "value") |>
-  mutate(
-    variable = case_when(
-      str_detect(raw_trend, "weight") ~ "Weight",
-      str_detect(raw_trend, "ffm") ~ "Fat Free Mass"
-    ),
-    what = case_when(
-      str_detect(raw_trend, "trend") ~ "Trended",
-      .default = "Raw"
-    )
-  ) |>
-  select(-raw_trend) |>
   filter(date >= "2020-01-01") |>
   ggplot(aes(x=date)) +
   geom_point(data = data |> filter(date < "2020-01-01"), 
@@ -339,28 +325,45 @@ weight_ffm <- data |>
   
   annotate("text", x = as.numeric(ymd("2015-01-01")), y = 65,
            size = 2,
-           label = "Note, dots pre-2020 are body mass and FFM at timepoints of prior Bodpod measurements") +
+           label = "Note, dots pre-2020 are body mass and FFM estimate at timepoints of prior Bodpod measurements") +
   
-  geom_ribbon(data = data |>   filter(date >= "2020-01-01"),
-              aes(ymin=trend_magee_ffm_lower, ymax=trend_magee_ffm_upper), 
-              alpha = 0.25, color = "#CC79A7", fill = "#CC79A7", linewidth = 0.25) +
-  geom_line(aes(y=value, colour = interaction(variable, what))) +
-  scale_color_manual(values = c("#fca7cd", "gray", "#CC79A7", "black")) +
+  geom_ribbon(data = data |> filter(date >= "2020-01-01"),
+              aes(ymin=trend_magee_ffm_lower, ymax=trend_magee_ffm_upper, fill = "FFM Estimate 95%CI\n(based on trend weight)"), 
+              alpha = 0.25, linewidth = 0.25) +
   
+  geom_line(aes(y=weight_kg, colour = "Raw Scale Weight")) +
+  geom_line(aes(y=trend_weight, colour = "Trend Weight")) +
+  
+  geom_line(aes(y=magee_ffm, colour = "FFM Estimate\n(based on raw scale weight)")) +
+  geom_line(aes(y=trend_magee_ffm, colour = "FFM Estimate\n(based on trend weight)")) +
+  
+  scale_colour_manual(
+    name = NULL,
+    breaks = c("Raw Scale Weight", "Trend Weight", 
+               "FFM Estimate\n(based on raw scale weight)",
+               "FFM Estimate\n(based on trend weight)"),
+    
+    values = c("Raw Scale Weight" = "grey70",
+               "Trend Weight" = "black",
+               "FFM Estimate\n(based on raw scale weight)" = "#fca7cd",
+               "FFM Estimate\n(based on trend weight)" = "#CC79A7")
+  ) +
+  scale_fill_manual(
+    name = NULL,
+    values = c("FFM Estimate 95%CI\n(based on trend weight)" = "#CC79A7")
+  ) +
   scale_x_date(limits = ymd(c("2010-01-01", "2025-12-18"))) +
   labs(
     y = "Weight (kg)",
     x = "Time",
     color = "",
-    title = "Body mass data & fat free mass estimates (kg)",
+    title = "Historical weight data & fat free mass estimates (kg)",
     subtitle = "Body mass is <span style='color:gray;'>raw</span> and <span style='color:black;'>**trended**</span> based on a 20-day exponentially weighted moving average*<br>Estimates for fat free mass are calculated from estimated FFM% LOESS regression point prediction (see bottom plot) and either <span style='color:#fca7cd;'>raw</span> or <span style='color:#CC79A7;'>**trended**</span> body mass<br><span style='color:#CC79A7;'>Ribbon</span> about the fat free mass estimates are based on the upper and lower 95% confidence intervals from LOESS regression and trended body mass"
-  ) +
-  guides(
-    color = "none"
   ) +
   theme_bw() +
   theme(
-    plot.subtitle = ggtext::element_markdown(size = 8)
+    plot.subtitle = ggtext::element_markdown(size = 8),
+    legend.position = "top"
   )
   
 
@@ -378,7 +381,7 @@ ffm_loess <- tibble(
   labs(
     y = "FFM (%)",
     x = "Time",
-    title = "Fat free mass estimates (%)",
+    title = "Fat free mass (%) estimates from historical bodpod data\u2020",
     subtitle = "LOESS regression (span = 0.75) with 95% confidence intervals\nDashed line represents mean of all estimates"
   ) +
   theme_bw() +
@@ -390,8 +393,31 @@ ffm_loess <- tibble(
 
 
 (weight_ffm / ffm_loess) +
-  plot_annotation(caption = "*This is the same as used in MacroFactors trended weight")
+  plot_annotation(caption = "*This is the same as used in MacroFactors trended weight\n\u2020Calculated from bodpod estimated density using formula from Magee et al. (DOI: 10.1080/15502783.2025.2504578)")
 
+
+
+all_data_prepared |>
+  filter(date >= "2020-01-01") |>
+  ggplot(aes(x=date)) +
+  geom_line(
+    aes(y = weight_kg, colour = "Raw Scale Weight"),
+  ) +
+  geom_line(
+    aes(y = trend_weight, colour = "Trend Weight"),
+  ) +
+  scale_colour_manual(
+    name = NULL,
+    values = c("Raw Scale Weight" = "grey70",
+               "Trend Weight" = "black")
+  ) +
+  labs(
+    y = "Weight (kg)",
+    x = "Time",
+    title = "Scale and trend weight from 2020 to 2025"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
 
 
 

@@ -41,6 +41,7 @@ ffm_percent_plot_png|stem|b9b64d6bb0c72716|a5334350ad6d36d0|689b7fd0968d7d6e|379
 macros_plot|stem|5beba568670c7963|3a530ed37faeac18|7c30f8fcbde36eb3|-605750313||t20452.8773722091s|s363580b|363580|qs|local|vector|||0.11||
 macros_plot_png|stem|ba0033f274c33331|6f3e68272e86c3b5|b59512d976b776ce|1661026840||t20452.8773813087s|s97b|97|qs|local|vector|||0.58|Removed 9 rows containing missing values or values outside the scale range (`geom_col()`).|
 avg_protein_g_kg|stem|48c7ea5f544d26bd|b90c0a128e5fb26e|e07ee0e564a3e809|1942039201||t20452.8799660455s|s214b|214|qs|local|vector|||0||
+image_date_data|stem|8945302bf34875a1|53f4636fe1ffd7f7|791f172ecab5cb88|1472482226||t20452.8805627469s|s581b|581|qs|local|vector|||0.02||
 prep_diet_data|function|40a7ba14d6438916
 calculate_energy_deficit|function|8d88cdad4b7e45a6
 prep_withings_step_data|function|6b0c4f575f6d5413
@@ -63,4 +64,4 @@ prep_macrofactor_step_data|function|881cc8fb9b57af34
 plot_kcal|function|4a488b4ef1935a0c
 calculate_steps|function|9cd7327ef5f89fab
 calculate_macros|function|b2f3e1277e93d9ef
-image_date_data|stem|8945302bf34875a1|53f4636fe1ffd7f7|791f172ecab5cb88|1472482226||t20452.8805627469s|s581b|581|qs|local|vector|||0.02||
+grateful_report|stem|4afacebd259fa617|fd0f94877d642e4d|2c530c1562a7fbd1|1345217321||t20453.4875096014s|s97b|97|qs|local|vector|||4.64||

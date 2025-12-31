@@ -28,6 +28,12 @@ tar_source("R/functions/.")
 
 # Replace the target list below with your own:
 list(
+  
+  # Cite packages
+  tar_target(
+    grateful_report,
+    grateful::cite_packages(out.format = "pdf", out.dir = ".")
+  ),
 
   # Read in and prepare each data source ----
   tar_target(
